@@ -21,12 +21,12 @@ public class NoteController {
 
     private final NoteService noteService;
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<NoteResponse> createNote(
-            @RequestParam(value = "content", required = false) String content,
-            @RequestParam(value = "file", required = false) MultipartFile file,
-            @RequestParam("algorithm") String algorithm,
-            @RequestParam("ttl") String ttl
+            @RequestPart(value = "content", required = false) String content,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart("algorithm") String algorithm,
+            @RequestPart("ttl") String ttl
     ) {
         NoteRequest request = new NoteRequest(content, file, algorithm, ttl);
         String id = noteService.saveNote(request);

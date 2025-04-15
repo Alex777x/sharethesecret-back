@@ -1,6 +1,7 @@
 package pl.aliaksandrou.sharethesecretback.storage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ public class RedisNoteStorage implements NoteStorage {
     public RedisNoteStorage(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
         this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule());
     }
 
     @Override
@@ -32,7 +34,11 @@ public class RedisNoteStorage implements NoteStorage {
             String mimeType = "application/octet-stream";
 
             if (request.getFile() != null && !request.getFile().isEmpty()) {
-                data = request.getFile().getBytes();
+                try {
+                    data = request.getFile().getBytes();
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to read file content", e);
+                }
                 isFile = true;
                 filename = request.getFile().getOriginalFilename();
                 mimeType = request.getFile().getContentType();
