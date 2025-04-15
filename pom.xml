@@ -10,7 +10,7 @@
     </parent>
     <groupId>pl.aliaksandrou</groupId>
     <artifactId>sharethesecret-back</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>sharethesecret-back</name>
     <description>sharethesecret-back</description>
     <url/>
@@ -41,6 +41,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-actuator-autoconfigure</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
