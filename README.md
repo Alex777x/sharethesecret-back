@@ -4,13 +4,13 @@ This is the backend for **SecretNote** – a minimal, anonymous and secure note/
 encrypted messages or files that self-destruct after a single view or after a defined time.
 
 Frontend: [Angular 19 + Tailwind CSS](https://github.com/Alex777x/sharethesecret)  
-Backend: Java 24+, Spring Boot 3.x
+Backend: Java 21, Spring Boot 3.x
 
 ---
 
 ## 🧰 Technologies Used
 
-- Java 24+
+- Java 21
 - Spring Boot 3.x
 - REST API (Spring Web)
 - Redis (or in-memory fallback)
@@ -34,7 +34,7 @@ Backend: Java 24+, Spring Boot 3.x
 
 ### Requirements
 
-- Java 17+
+- Java 21+
 - Maven 3.x
 - Redis (optional, but recommended for production)
 
