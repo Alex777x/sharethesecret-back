@@ -28,8 +28,7 @@ public class NoteController {
             @RequestPart(value = "content", required = false) String content,
             @RequestPart(value = "file", required = false) MultipartFile file,
             @RequestPart("algorithm") String algorithm,
-            @RequestPart("ttl") String ttl
-    ) {
+            @RequestPart("ttl") String ttl) {
         NoteRequest request = new NoteRequest(content, file, algorithm, ttl);
         String id = noteService.saveNote(request);
         return ResponseEntity.ok(new NoteResponse(id));
@@ -40,10 +39,6 @@ public class NoteController {
         NoteData note = noteService.getNote(id);
         if (note == null) {
             return ResponseEntity.notFound().build();
-        }
-
-        if ("1-view".equals(note.getTtl())) {
-            noteService.deleteNote(id);
         }
 
         if (note.isFile()) {

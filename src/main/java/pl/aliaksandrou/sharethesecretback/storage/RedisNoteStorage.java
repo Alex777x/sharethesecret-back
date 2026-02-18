@@ -1,7 +1,7 @@
 package pl.aliaksandrou.sharethesecretback.storage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -19,10 +19,9 @@ public class RedisNoteStorage implements NoteStorage {
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public RedisNoteStorage(RedisTemplate<String, String> redisTemplate) {
+    public RedisNoteStorage(RedisTemplate<String, String> redisTemplate, ObjectMapper objectMapper) {
         this.redisTemplate = redisTemplate;
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.registerModule(new JavaTimeModule());
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -43,7 +42,7 @@ public class RedisNoteStorage implements NoteStorage {
                 filename = request.getFile().getOriginalFilename();
                 mimeType = request.getFile().getContentType();
             } else if (request.getContent() != null) {
-                data = request.getContent().getBytes();
+                data = request.getContent().getBytes(java.nio.charset.StandardCharsets.UTF_8);
                 mimeType = "text/plain";
             } else {
                 throw new IllegalArgumentException("Content or file must be provided.");
@@ -55,8 +54,7 @@ public class RedisNoteStorage implements NoteStorage {
                     filename,
                     mimeType,
                     request.getTtl(),
-                    Instant.now()
-            );
+                    Instant.now());
 
             String json = objectMapper.writeValueAsString(noteData);
             redisTemplate.opsForValue().set(id, json);
@@ -65,7 +63,7 @@ public class RedisNoteStorage implements NoteStorage {
             long seconds = switch (request.getTtl()) {
                 case "1h" -> 3600L;
                 case "24h" -> 86400L;
-                default -> 0L; // 1-view — удаляем вручную
+                default -> 604800L; // 7 days fallback for 1-view
             };
 
             if (seconds > 0) {
@@ -80,7 +78,8 @@ public class RedisNoteStorage implements NoteStorage {
     @Override
     public NoteData get(String id) {
         String json = redisTemplate.opsForValue().get(id);
-        if (json == null) return null;
+        if (json == null)
+            return null;
 
         try {
             return objectMapper.readValue(json, NoteData.class);
